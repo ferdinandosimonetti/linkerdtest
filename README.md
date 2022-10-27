@@ -87,7 +87,7 @@ done
 ## linking two clusters
 https://linkerd.io/2.12/tasks/multicluster/
 
-Give resources running on "west" cluster (and already meshed) visibility on those running on "east"
+Give resources running on **west** cluster knowledge about **east**'s gateway
 
 ```
 ferdi@DESKTOP-NL6I2OD:~/linkerdtest$ linkerd --context=east multicluster link --cluster-name east | kubectl --context=west apply -f -
@@ -136,7 +136,7 @@ for ctx in west east; do
   echo "-------------"
 done
 ````
-## "exporting" the east one
+## "exporting" the east one (using **mirror** feature)
 ```
 ferdi@DESKTOP-NL6I2OD:~/linkerdtest$ kubectl --context=east label svc -n test podinfo mirror.linkerd.io/exported=true
 service/podinfo labeled
@@ -181,4 +181,22 @@ OK: 26 MiB in 42 packages
   "num_goroutine": "9",
   "num_cpu": "2"
 }
+```
+
+## installing VIZ extension
+
+```
+for c in east west
+do
+    helm --kube-context $c install linkerd-viz -n linkerd-viz --create-namespace linkerd/linkerd-viz
+done
+```
+
+## trying traffic split
+https://linkerd.io/2.12/tasks/linkerd-smi/
+```
+kubectl create namespace trafficsplit-sample
+linkerd inject https://raw.githubusercontent.com/linkerd/linkerd2/main/test/integration/viz/trafficsplit/testdata/application.yaml | kubectl -n trafficsplit-sample apply -f -
+kubectl apply -f linkerdTrafficSplit.yml 
+
 ```

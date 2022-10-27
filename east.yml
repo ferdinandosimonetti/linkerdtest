@@ -9,7 +9,7 @@ contexts:
     cluster: east
     user: clusterAdmin_DefaultResourceGroup-PAR_east
   name: east
-current-context: east
+current-context: west
 kind: Config
 preferences: {}
 users:
