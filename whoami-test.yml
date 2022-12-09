@@ -1,0 +1,108 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: whoami1
+  namespace: default
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: whoami2
+  namespace: default
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: whoami3
+  namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: whoami1
+  name: whoami1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami1
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: whoami1
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - image: containous/whoami
+        name: whoami
+      serviceAccountName: whoami1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: whoami2
+  name: whoami2
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami2
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: whoami2
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - image: containous/whoami
+        name: whoami
+      serviceAccountName: whoami2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: whoami3
+  name: whoami3
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami3
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: whoami3
+    spec:
+      serviceAccountName: whoami3
+      automountServiceAccountToken: false
+      containers:
+      - image: containous/whoami
+        name: whoami
+        resources: {}
+---
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: ServerAuthorization
+metadata:
+  namespace: default
+  name: whoami2-whoami1-auth
+spec:
+  server:
+    name: whoami1
+  # The voting service only allows requests from the web service.
+  client:
+    meshTLS:
+      serviceAccounts:
+        - name: whoami2
