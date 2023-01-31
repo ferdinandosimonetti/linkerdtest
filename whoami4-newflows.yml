@@ -1,0 +1,98 @@
+# getting health, setting return code for health
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: whoami4-health-get
+  namespace: mydemo2
+spec:
+  parentRefs:
+    - name: whoami4-server
+      kind: Server
+      group: policy.linkerd.io
+  rules:
+    - matches:
+      - path:
+          value: "/health"
+          type: "PathPrefix"
+        method: GET
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: whoami4-health-post
+  namespace: mydemo2
+spec:
+  parentRefs:
+    - name: whoami4-server
+      kind: Server
+      group: policy.linkerd.io
+  rules:
+    - matches:
+      - path:
+          value: "/health"
+          type: "PathPrefix"
+        method: POST
+# MeshTLSAuthentication allow to group multiple source entities
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: MeshTLSAuthentication
+metadata:
+  name: whoami-mydemo2-companions
+  namespace: mydemo2
+spec:
+  identityRefs:
+    - kind: ServiceAccount
+      name: whoami1
+      namespace: mydemo1
+    - kind: ServiceAccount
+      name: whoami6
+      namespace: mydemo2
+# whoami2 can perform GET on whoami4's /health (via HTTPRoute)
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: whoami2-whoami4-policy-get
+  namespace: mydemo2
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: HTTPRoute
+    name: whoami4-health-get
+  requiredAuthenticationRefs:
+    - name: whoami2
+      kind: ServiceAccount
+      namespace: mydemo1
+# whoami3 can perform POST on whoami4's /health (via HTTPRoute)
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: whoami3-whoami4-policy-post
+  namespace: mydemo2
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: HTTPRoute
+    name: whoami4-health-post
+  requiredAuthenticationRefs:
+    - name: whoami3
+      kind: ServiceAccount
+      namespace: mydemo1
+# the members of the MeshTLSAuthentication can reach out to whoami5
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: companions-whoami4-policy
+  namespace: mydemo2
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: whoami5-server
+  requiredAuthenticationRefs:
+    - name: whoami-mydemo2-companions
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
