@@ -2,37 +2,37 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: whoami1
-  namespace: default
+  name: whoami4
+  namespace: mydemo2
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: whoami2
-  namespace: default
+  name: whoami5
+  namespace: mydemo2
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: whoami3
-  namespace: default
+  name: whoami6
+  namespace: mydemo2
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: whoami1
-  name: whoami1
-  namespace: default
+    app: whoami4
+  name: whoami4
+  namespace: mydemo2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: whoami1
+      app: whoami4
   template:
     metadata:
       labels:
-        app: whoami1
+        app: whoami4
     spec:
       automountServiceAccountToken: false
       containers:
@@ -52,25 +52,25 @@ spec:
         imagePullPolicy: Always
         name: netshoot
         resources: {}
-      serviceAccount: whoami1
-      serviceAccountName: whoami1
+      serviceAccount: whoami4
+      serviceAccountName: whoami4
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: whoami2
-  name: whoami2
-  namespace: default
+    app: whoami5
+  name: whoami5
+  namespace: mydemo2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: whoami2
+      app: whoami5
   template:
     metadata:
       labels:
-        app: whoami2
+        app: whoami5
     spec:
       automountServiceAccountToken: false
       containers:
@@ -88,25 +88,25 @@ spec:
         image: nicolaka/netshoot
         imagePullPolicy: Always
         name: netshoot
-      serviceAccount: whoami2
-      serviceAccountName: whoami2
+      serviceAccount: whoami5
+      serviceAccountName: whoami5
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: whoami3
-  name: whoami3
-  namespace: default
+    app: whoami6
+  name: whoami6
+  namespace: mydemo2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: whoami3
+      app: whoami6
   template:
     metadata:
       labels:
-        app: whoami3
+        app: whoami6
     spec:
       automountServiceAccountToken: false
       containers:
@@ -124,16 +124,16 @@ spec:
         image: nicolaka/netshoot
         imagePullPolicy: Always
         name: netshoot
-      serviceAccount: whoami3
-      serviceAccountName: whoami3
+      serviceAccount: whoami6
+      serviceAccountName: whoami6
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: whoami1
-  name: whoami1
-  namespace: default
+    app: whoami4
+  name: whoami4
+  namespace: mydemo2
 spec:
   ipFamilies:
   - IPv4
@@ -143,7 +143,7 @@ spec:
     protocol: TCP
     targetPort: 80
   selector:
-    app: whoami1
+    app: whoami4
   sessionAffinity: None
   type: ClusterIP
 ---
@@ -151,9 +151,9 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: whoami2
-  name: whoami2
-  namespace: default
+    app: whoami5
+  name: whoami5
+  namespace: mydemo2
 spec:
   ipFamilies:
   - IPv4
@@ -163,7 +163,7 @@ spec:
     protocol: TCP
     targetPort: 80
   selector:
-    app: whoami2
+    app: whoami5
   sessionAffinity: None
   type: ClusterIP
 ---
@@ -171,9 +171,9 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: whoami3
-  name: whoami3
-  namespace: default
+    app: whoami6
+  name: whoami6
+  namespace: mydemo2
 spec:
   ipFamilies:
   - IPv4
@@ -183,6 +183,6 @@ spec:
     protocol: TCP
     targetPort: 80
   selector:
-    app: whoami3
+    app: whoami6
   sessionAffinity: None
   type: ClusterIP

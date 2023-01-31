@@ -2,7 +2,7 @@
 apiVersion: policy.linkerd.io/v1beta1
 kind: ServerAuthorization
 metadata:
-  namespace: default
+  namespace: mydemo1
   name: whoami3-whoami1-auth
   labels:
     app.kubernetes.io/part-of: whoami

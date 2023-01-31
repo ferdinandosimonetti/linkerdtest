@@ -3,19 +3,19 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: whoami1
-  namespace: default
+  namespace: mydemo1
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: whoami2
-  namespace: default
+  namespace: mydemo1
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: whoami3
-  namespace: default
+  namespace: mydemo1
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -23,7 +23,7 @@ metadata:
   labels:
     app: whoami1
   name: whoami1
-  namespace: default
+  namespace: mydemo1
 spec:
   replicas: 1
   selector:
@@ -31,8 +31,6 @@ spec:
       app: whoami1
   template:
     metadata:
-      annotations:
-        linkerd.io/inject: enabled
       labels:
         app: whoami1
     spec:
@@ -44,6 +42,7 @@ spec:
         ports:
         - containerPort: 80
           protocol: TCP
+        resources: {}
       - args:
         - -c
         - sleep 999999999
@@ -52,6 +51,7 @@ spec:
         image: nicolaka/netshoot
         imagePullPolicy: Always
         name: netshoot
+        resources: {}
       serviceAccount: whoami1
       serviceAccountName: whoami1
 ---
@@ -61,7 +61,7 @@ metadata:
   labels:
     app: whoami2
   name: whoami2
-  namespace: default
+  namespace: mydemo1
 spec:
   replicas: 1
   selector:
@@ -69,8 +69,6 @@ spec:
       app: whoami2
   template:
     metadata:
-      annotations:
-        linkerd.io/inject: enabled
       labels:
         app: whoami2
     spec:
@@ -99,7 +97,7 @@ metadata:
   labels:
     app: whoami3
   name: whoami3
-  namespace: default
+  namespace: mydemo1
 spec:
   replicas: 1
   selector:
@@ -107,8 +105,6 @@ spec:
       app: whoami3
   template:
     metadata:
-      annotations:
-        linkerd.io/inject: enabled
       labels:
         app: whoami3
     spec:
@@ -137,7 +133,7 @@ metadata:
   labels:
     app: whoami1
   name: whoami1
-  namespace: default
+  namespace: mydemo1
 spec:
   ipFamilies:
   - IPv4
@@ -157,7 +153,7 @@ metadata:
   labels:
     app: whoami2
   name: whoami2
-  namespace: default
+  namespace: mydemo1
 spec:
   ipFamilies:
   - IPv4
@@ -177,7 +173,7 @@ metadata:
   labels:
     app: whoami3
   name: whoami3
-  namespace: default
+  namespace: mydemo1
 spec:
   ipFamilies:
   - IPv4
@@ -190,4 +186,3 @@ spec:
     app: whoami3
   sessionAffinity: None
   type: ClusterIP
----
