@@ -31,16 +31,20 @@ spec:
       app: whoami1
   template:
     metadata:
-      annotations:
-        linkerd.io/inject: enabled
       labels:
         app: whoami1
     spec:
       automountServiceAccountToken: false
-      containers:
-      - image: containous/whoami
-        name: whoami
       serviceAccountName: whoami1
+      containers:
+      - name: whoami
+        image: containous/whoami
+        ports:
+          - containerPort: 80
+      - name: netshoot
+        image: nicolaka/netshoot
+        command: ["/bin/bash"]
+        args: ["-c", "sleep 999999999"]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -56,16 +60,20 @@ spec:
       app: whoami2
   template:
     metadata:
-      annotations:
-        linkerd.io/inject: enabled
       labels:
         app: whoami2
     spec:
       automountServiceAccountToken: false
-      containers:
-      - image: containous/whoami
-        name: whoami
       serviceAccountName: whoami2
+      containers:
+      - name: whoami
+        image: containous/whoami
+        ports:
+          - containerPort: 80
+      - name: netshoot
+        image: nicolaka/netshoot
+        command: ["/bin/bash"]
+        args: ["-c", "sleep 999999999"]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -79,19 +87,22 @@ spec:
   selector:
     matchLabels:
       app: whoami3
-  strategy: {}
   template:
     metadata:
       labels:
         app: whoami3
     spec:
-      serviceAccountName: whoami3
       automountServiceAccountToken: false
+      serviceAccountName: whoami3
       containers:
-      - image: containous/whoami
-        name: whoami
-        resources: {}
----
+      - name: whoami
+        image: containous/whoami
+        ports:
+          - containerPort: 80
+      - name: netshoot
+        image: nicolaka/netshoot
+        command: ["/bin/bash"]
+        args: ["-c", "sleep 999999999"]
 ---
 apiVersion: policy.linkerd.io/v1beta1
 kind: ServerAuthorization
@@ -106,3 +117,4 @@ spec:
     meshTLS:
       serviceAccounts:
         - name: whoami2
+

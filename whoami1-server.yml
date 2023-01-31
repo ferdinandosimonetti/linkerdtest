@@ -1,0 +1,14 @@
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: Server
+metadata:
+  namespace: default
+  name: whoami1-server
+  labels:
+    app: whoami1
+spec:
+  podSelector:
+    matchLabels:
+      app: whoami1
+  port: 80
+  proxyProtocol: HTTP/1

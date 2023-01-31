@@ -1,0 +1,19 @@
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: ServerAuthorization
+metadata:
+  namespace: default
+  name: whoami3-whoami1-auth
+  labels:
+    app.kubernetes.io/part-of: whoami
+    app.kubernetes.io/name: whoami3-whoami1
+spec:
+  # the Server with label app=whoami1 can be contacted by Pods running with whoami2 ServiceAccount
+  server:
+    selector:
+      matchLabels:
+        app: whoami1
+  client:
+    meshTLS:
+      serviceAccounts:
+        - name: whoami3
